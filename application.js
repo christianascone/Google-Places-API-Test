@@ -98,6 +98,12 @@ jQuery(function($) {
   }
   
   function showPlace (place) {
+    placesService.getDetails({
+      reference: place.reference
+    }, function(data){
+      console.log(data);
+    });
+
     placeMarker.setMap();
     var image = new google.maps.MarkerImage(
         place.icon, 
