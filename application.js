@@ -58,6 +58,18 @@ jQuery(function($) {
     fuckingFind(autocomplete.getPlace().geometry.location);
   });
   
+  // fucking-waiting animation
+  //setInterval(function(){
+  //  $('#fucking-waiting img').animate({
+  //    "margin-right":0,
+  //    "margin-left":-250
+  //  }, 750).animate({
+  //    "margin-right":-250,
+  //    "margin-left":0
+  //  }, 750);
+  //}, 1500);
+  
+  
   function findPlaces (location) {  
     $fuckingWaiting.fadeToggle();
     placesService.search({
