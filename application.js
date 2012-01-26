@@ -2,17 +2,14 @@ var types = ['accounting','airport','amusement_park','aquarium','art_gallery','a
 
 jQuery(function($) {
   var places,
-    userPlace,
+    userLocation,
     currentPlace = 0,  
     currentType = 'bar',
-    currentRadius = '500'  
+    currentRadius = '1000',
     $input  = $("input[type=search]"),
-    $prev = $('#prev'),
-    $next = $('#next'),
-    $map= $('#map'),
-    $select = $('#select-type');
-    $radius = $('#radius');
-    map = new google.maps.Map($map[0], {
+    $fuckingWaiting = $('#fucking-waiting');
+    
+    map = new google.maps.Map($('#fucking-map')[0], {
       zoom: 13,
       mapTypeId: google.maps.MapTypeId.ROADMAP,
       styles: [{featureType: "all",stylers: [{ saturation: -100 }]}],
@@ -26,7 +23,6 @@ jQuery(function($) {
     }),
     userMarker =  new google.maps.Marker({map:map}),
     placeMarker = new google.maps.Marker, 
-    infoWindow = new google.maps.InfoWindow,
     geocoder = new google.maps.Geocoder(),
     placesService = new google.maps.places.PlacesService(map),
     directionsService = new google.maps.DirectionsService({
@@ -35,56 +31,44 @@ jQuery(function($) {
     directionsDisplay = new google.maps.DirectionsRenderer({
       suppressMarkers: true
     });
-    autocomplete = new google.maps.places.Autocomplete($input[0], { types: ['geocode'] });
+    autocomplete = new google.maps.places.Autocomplete($input[0], { 
+      types: ['geocode'] 
+    });
 
-  infoWindow.open(map, placeMarker);
   directionsDisplay.bindTo('map', placeMarker);
   
-  google.maps.event.addListener(autocomplete, 'place_changed', function() {
-    userPlace = autocomplete.getPlace();
-    map.setCenter(userPlace.geometry.location);
+  map.controls[google.maps.ControlPosition.RIGHT].push($('#fucking-sidebar')[0]);
+  
+  function fuckingFind(location){
+    userLocation = location;
+    map.setCenter(userLocation);
     map.setZoom(16);
-    findPlaces(userPlace);
-    userMarker.setPosition(userPlace.geometry.location);
-  });
-  
-  google.maps.event.addListener(placeMarker, 'click', function(marker) {
-    infoWindow.open(map, placeMarker);
-  });
-  
-  for(i in types){
-    var $option = $("<option>",{
-      value: types[i],
-      text: types[i]
-    });
-    if (types[i] == currentType) {
-      $option.attr("selected", "selected");
-    };
-    $select.append($option);
+    findPlaces(userLocation);
+    userMarker.setPosition(userLocation);
   }
-  $select.bind("change",function(event) {
-    currentType = this.value;
-    userPlace && findPlaces(userPlace);
-  });
-  var timer;
-  $radius.bind("change", function() {
-    clearTimeout(timer);
-    timer = setTimeout(function() {
-      currentRadius = $radius.val();
-      $('#label-radius span').text(currentRadius);
-      userPlace && findPlaces(userPlace);
-    }, 500);
+  
+  // Try W3C Geolocation
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(function(position) {
+      fuckingFind(new google.maps.LatLng(position.coords.latitude,position.coords.longitude));
+    });
+  };
+  
+  google.maps.event.addListener(autocomplete, 'place_changed', function() {
+    fuckingFind(autocomplete.getPlace().geometry.location);
   });
   
-  function findPlaces (place) {
+  function findPlaces (location) {  
+    $fuckingWaiting.fadeToggle();
     placesService.search({
-      location: place.geometry.location,
+      location: location,
       radius: currentRadius,
       types: [currentType]
     }, function(results, status) {
       if (status == google.maps.places.PlacesServiceStatus.OK) {
-        places = results;
+        places = results.sort(function() {return 0.5 - Math.random()}) ;
         currentPlace = 0;
+        toggleFuckingView();
         showPlace(results[0]);
       }else{
         renderFallback();
@@ -93,72 +77,77 @@ jQuery(function($) {
   }
   
   function renderFallback (message) {
-    console.log(message || "No results");
+    alert("NO FUCKING PLACES FOUND, WHERE THE FUCK ARE YOU?!");
     placeMarker.setMap();
   }
   
   function showPlace (place) {
+    placeMarker.setMap();
+    
     placesService.getDetails({
       reference: place.reference
     }, function(data){
-      console.log(data);
-    });
+            
+      $(" #fucking-location header a").replaceWith(
+        '<a href="' + 
+        (data.website != "" ? data.website : data.url ) + 
+        '" target="_blank">' + 
+        data.name + '</a>'
+      );
 
-    placeMarker.setMap();
-    var image = new google.maps.MarkerImage(
-        place.icon, 
-        new google.maps.Size(71, 71),
-        new google.maps.Point(0, 0), new google.maps.Point(17, 34),
-        new google.maps.Size(35, 35)
-      ),
-      bounds = new google.maps.LatLngBounds(userMarker.position);
-    placeMarker.setIcon(image);
-    placeMarker.setPosition(place.geometry.location);
-    placeMarker.setMap(map);
-    map.fitBounds(bounds.extend(place.geometry.location));
-    
-    directionsService.route({
-      origin: userMarker.position,
-      destination: placeMarker.position,
-      travelMode: google.maps.TravelMode.WALKING,
-      provideRouteAlternatives: false,
-    }, function(result, status) {
-      if (status == google.maps.DirectionsStatus.OK) {
-        infoWindow.setContent(
-          "<b>" + place.name + "</b>" + "<br>" 
-          + place.vicinity + "<br>"
-          +"<small>" + result.routes[0].legs[0].distance.text + " entfernt.</small>"
-        );
-        directionsDisplay.setDirections(result);
-      }
+      var image = new google.maps.MarkerImage(
+          data.icon, 
+          new google.maps.Size(71, 71),
+          new google.maps.Point(0, 0), new google.maps.Point(17, 34),
+          new google.maps.Size(35, 35)
+        ),
+        bounds = new google.maps.LatLngBounds(userMarker.position);
+
+      placeMarker.setIcon(image);
+      placeMarker.setPosition(data.geometry.location);
+      placeMarker.setMap(map);
+      map.fitBounds(bounds.extend(data.geometry.location));
+
+      directionsService.route({
+        origin: userMarker.position,
+        destination: placeMarker.position,
+        travelMode: google.maps.TravelMode.WALKING,
+        provideRouteAlternatives: false,
+      }, function(result, status) {
+        if (status == google.maps.DirectionsStatus.OK) {
+
+          var text = "<b>" + data.name + "</b>" + "<br>" 
+            + data.vicinity + "<br>"
+            +"<small>" + result.routes[0].legs[0].distance.text + " entfernt.</small>";
+
+          $('#fucking-sidebar').html(text);
+
+          directionsDisplay.setDirections(result);
+        }
+      });
+      
     });
+    
   };
   
-  var $prev = $('#prev'),
-    $next = $('#next');
-  
-  function pagination (event) {
-    if (event.target == $prev[0]) {
-      paginate(-1);
-    }else{
-      paginate(1);
-    }
-  }
-  
-  function paginate (page) {
-    currentPlace += page;
-    if (currentPlace < 0) {
-      currentPlace = places.length;
-    };
-    if (currentPlace == places.length) {
-      currentPlace = 0;
-    };
-    showPlace(places[currentPlace]);
-  }
-  
-  $('body').delegate("#prev, #next", "click", function(event){
+  $('#fucking-next-location').click(function(event){
     event.preventDefault();
-    pagination(event);
+    currentPlace += 1;
+    if (currentPlace < 0) { currentPlace = places.length; };
+    if (currentPlace == places.length) { currentPlace = 0; };
+    showPlace(places[currentPlace]);
   });
+  
+  $('#fucking-wrong').click(function(){
+    places = [];
+    toggleFuckingView();
+  });
+  
+  function toggleFuckingView() {
+    setTimeout(function(){
+      $('#fucking-start').fadeToggle();
+      $fuckingWaiting.fadeToggle();
+    }, 500);
+  };
 
 });
