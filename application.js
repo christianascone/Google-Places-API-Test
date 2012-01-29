@@ -4,11 +4,11 @@ jQuery(function($) {
   var places,
     userLocation,
     currentPlace = 0,  
-    currentType = 'bar',
-    currentRadius = '1000',
-    $input  = $("input[type=search]"),
+    currentTypes = ['bar','pub'],
+    currentRadius = '1500',
+    $input = $("input[type=search]"),
+    $form = $("form"),
     $fuckingWaiting = $('#fucking-waiting');
-    
     map = new google.maps.Map($('#fucking-map')[0], {
       zoom: 13,
       mapTypeId: google.maps.MapTypeId.ROADMAP,
@@ -21,7 +21,7 @@ jQuery(function($) {
       streetViewControl: false,
       overviewMapControl: false
     }),
-    userMarker =  new google.maps.Marker({map:map}),
+    userMarker =  new google.maps.Marker({map:map, icon: "pointer.png" }),
     placeMarker = new google.maps.Marker, 
     geocoder = new google.maps.Geocoder(),
     placesService = new google.maps.places.PlacesService(map),
@@ -29,7 +29,11 @@ jQuery(function($) {
       unitSystem: google.maps.DirectionsUnitSystem.METRIC
     }),
     directionsDisplay = new google.maps.DirectionsRenderer({
-      suppressMarkers: true
+      suppressMarkers: true,
+      polylineOptions: {
+        clickable: false,
+        strokeColor: "00ccff"
+      }
     });
     autocomplete = new google.maps.places.Autocomplete($input[0], { 
       types: ['geocode'] 
@@ -54,28 +58,37 @@ jQuery(function($) {
     });
   };
   
-  google.maps.event.addListener(autocomplete, 'place_changed', function() {
-    fuckingFind(autocomplete.getPlace().geometry.location);
+  $form.submit(function(event){
+    event.preventDefault();
+    var query = $input.val();
+    if (query.length > 0) {
+      geocoder.geocode({
+        address: query
+      }, function(results, status){
+        if (status == google.maps.GeocoderStatus.OK) {
+          fuckingFind(results[0].geometry.location);
+        }
+      })
+    };
   });
   
-  // fucking-waiting animation
-  //setInterval(function(){
-  //  $('#fucking-waiting img').animate({
-  //    "margin-right":0,
-  //    "margin-left":-250
-  //  }, 750).animate({
-  //    "margin-right":-250,
-  //    "margin-left":0
-  //  }, 750);
-  //}, 1500);
+  google.maps.event.addListener(autocomplete, 'place_changed', function() {
+    var place = autocomplete.getPlace();
+    if (place.geometry) {
+      fuckingFind(place.geometry.location);
+    };
+  });
   
-  
-  function findPlaces (location) {  
+  var request;
+  function findPlaces (location) {
+    if (request) { return };
+    request = true;
+    places = []; 
     $fuckingWaiting.fadeToggle();
     placesService.search({
       location: location,
       radius: currentRadius,
-      types: [currentType]
+      types: currentTypes
     }, function(results, status) {
       if (status == google.maps.places.PlacesServiceStatus.OK) {
         places = results.sort(function() {return 0.5 - Math.random()}) ;
@@ -85,12 +98,14 @@ jQuery(function($) {
       }else{
         renderFallback();
       }
+      request = null;
     });
   }
   
   function renderFallback (message) {
     alert("NO FUCKING PLACES FOUND, WHERE THE FUCK ARE YOU?!");
     placeMarker.setMap();
+    $fuckingWaiting.fadeToggle();
   }
   
   function showPlace (place) {
@@ -99,23 +114,14 @@ jQuery(function($) {
     placesService.getDetails({
       reference: place.reference
     }, function(data){
-            
       $(" #fucking-location header a").replaceWith(
-        '<a href="' + 
-        (data.website != "" ? data.website : data.url ) + 
-        '" target="_blank">' + 
-        data.name + '</a>'
+        '<a href="' + (data.website && data.website != "" ? data.website : data.url ) + '" target="_blank">' + 
+        data.name + 
+        '</a>'
       );
 
-      var image = new google.maps.MarkerImage(
-          data.icon, 
-          new google.maps.Size(71, 71),
-          new google.maps.Point(0, 0), new google.maps.Point(17, 34),
-          new google.maps.Size(35, 35)
-        ),
-        bounds = new google.maps.LatLngBounds(userMarker.position);
-
-      placeMarker.setIcon(image);
+      var bounds = new google.maps.LatLngBounds(userMarker.position);
+      placeMarker.setIcon("beer.png");
       placeMarker.setPosition(data.geometry.location);
       placeMarker.setMap(map);
       map.fitBounds(bounds.extend(data.geometry.location));
@@ -127,13 +133,10 @@ jQuery(function($) {
         provideRouteAlternatives: false,
       }, function(result, status) {
         if (status == google.maps.DirectionsStatus.OK) {
-
           var text = "<b>" + data.name + "</b>" + "<br>" 
             + data.vicinity + "<br>"
-            +"<small>" + result.routes[0].legs[0].distance.text + " entfernt.</small>";
-
+            +"<small>" + result.routes[0].legs[0].distance.text + "</small>";
           $('#fucking-sidebar').html(text);
-
           directionsDisplay.setDirections(result);
         }
       });
@@ -152,6 +155,7 @@ jQuery(function($) {
   
   $('#fucking-wrong').click(function(){
     places = [];
+    $fuckingWaiting.show();
     toggleFuckingView();
   });
   

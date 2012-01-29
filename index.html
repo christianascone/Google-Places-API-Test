@@ -3,14 +3,29 @@
   <head>
     <meta charset="utf-8">
     <title>Google Places API test</title>
+    
+    <meta property="og:title" content="WHERE THE FUCK SHOULD I GO FOR DRINKS?"/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:url" content="http://wherethefuckshouldigofordrinks.com"/>
+    <meta property="og:site_name" content="WTFSIGFD"/>
+    <meta property="og:description" content="WHERE THE FUCK SHOULD I GO FOR DRINKS"/>
+    
+    <meta name="description" content="WHERE THE FUCK SHOULD I GO FOR DRINKS"/>
+    <meta name="keywords" content="where the fuck should i go for drinks? drinks, recommendations, pubs, bars, maps, directions, google, api"/>
+    
+    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Homenaje">
     <link rel="stylesheet" href="style.css">
-    <link rel="dns-prefetch" href="https://www.googleapis.com">
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
   </head>
   <body>
     
     <section id="fucking-start">
-      <input type="search" placeholder="WHERE THE FUCK ARE YOU?" />
-      <input type="submit" value="FIND ME A PLACE TO FUCKING DRINK" />
+      <form action="/" method="get">
+        <input type="search" placeholder="WHERE THE FUCK ARE YOU?" />
+        <input type="submit" value="FIND ME A PLACE TO FUCKING DRINK" />
+      </form>
       
       <div id="fucking-waiting">
         WAIT THE FUCK UP
@@ -25,6 +40,7 @@
     <section id="fucking-location">
       <header>
         WHY DON'T YOU FUCKING GO TO
+        <br>
         <a href="#"></a>
       </header>
       
@@ -38,17 +54,43 @@
     </section>
     
     <section id="fucking-friends">
-      TELL MY AWESOME FRIENDS ABOUT IT
+      TELL YOUR AWESOME FRIENDS ABOUT IT:
       <ul>
-        <li>Facebook</li>
-        <li>Twitter</li>
-        <li>Google+</li>
-        <li>Imprint</li>
+        <li class="facebook">
+          <div class="fb-like" data-send="false" data-layout="button_count" data-width="140" data-show-faces="false" data-font="lucida grande"></div>
+        </li>
+        <li class="twitter">
+          <a href="https://twitter.com/share" class="twitter-share-button">Tweet</a>
+          <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+        </li>
+        <li class="gplus">
+          <div class="g-plusone" data-size="medium"></div>
+        </li>
+        <li class="imprint">
+          <a href="/imprint">Imprint</a>
+        </li>
       </ul>
+      <div class="clearfix"></div>
     </section>
     
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
     <script src="http://maps.googleapis.com/maps/api/js?v=3&libraries=places&sensor=false"></script>
     <script src="application.js"></script>
+    <div id="fb-root"></div>
+    <script>(function(d, s, id) {
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) return;
+      js = d.createElement(s); js.id = id;
+      js.src = "//connect.facebook.net/de_DE/all.js#xfbml=1";
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));</script>
+    <!-- Platzieren Sie diese Render-Anweisung an einer geeigneten Stelle. -->
+    <script type="text/javascript">
+      (function() {
+        var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+        po.src = 'https://apis.google.com/js/plusone.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+      })();
+    </script>
   </body>
 </html>
