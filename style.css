@@ -73,6 +73,10 @@ body>footer{
   display:block;
   position:fixed;
   padding: 50px;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -o-box-sizing: border-box;
+  -ms-box-sizing: border-box;
   box-sizing: border-box;
   top:0;
   right:0;
@@ -89,7 +93,7 @@ body>footer{
 }
 
 #fucking-location header a{
-  display:inline-block;
+  display:block;
 }
 
 input[type=search]::-webkit-search-decoration,
@@ -184,8 +188,8 @@ input[type=submit]:hover{
 }
 #fucking-sidebar{
   width: 200px;
-  height:260px;
   background: url("sidebar.png");
+  background: rgba(255,255,255,.6);
   font-size:24px;
   text-align:right;
   padding:20px;
@@ -211,7 +215,7 @@ footer{
 footer a{
   text-align:center;
   display:inline-block;
-  width:49%;
+  width:45%;
   font-size: 32px;
 }
 #fucking-friends{
@@ -254,19 +258,27 @@ footer a{
 }
 #fucking-sites h4{
   text-align:left;
-  padding: 0 60px 20px;
+  padding: 0 0 20px 10px;
   font-size:32px;
 }
 #fucking-sites ul{
-  width: 50%;
-  float:left;
+  overflow: hidden;
 }
 #fucking-sites ul li{
-  margin: 5px 0;
+  margin: 5px 0 0;
+  padding: 0 0 0 5px;
+  text-align: left;
+  float: left;
+  width: 50%;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -o-box-sizing: border-box;
+  -ms-box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 #fucking-sites ul li img{
-  margin: 0 10px ;
+  margin: 0 10px 0 0;
   height: 20px;
 }
 
@@ -298,16 +310,29 @@ body > footer a{
   #fucking-friends ul {
     display: block;
     margin: 0;
-    padding-left: 20px;
   }
   #fucking-friends ul li.facebook {
     width: auto;
-    margin-top: 0;
   }
   #fucking-sites h4 {
-    padding-right: 10px;
     padding-left: 10px;
-    text-align: center;
+  }
+  #fucking-sites ul li {
+    float: none;
+    width: auto;
+    padding-left: 10px;
+  }
+  #fucking-map-wrapper {
+    overflow: hidden;
+  }
+  #fucking-map {
+    margin-bottom: 10px;
+  }
+  #fucking-sidebar {
+    padding-top: 10px;
+    float: right;
+    position: static;
+    width: auto;
   }
 }
 @media (max-width: 560px) {
@@ -320,10 +345,16 @@ body > footer a{
   padding-left: 10px;
   padding-right: 10px;
  }
+ #fucking-sites ul li {
+  font-size: 18px;
+ }
 }
 @media (max-width: 480px) {
  body {
   padding-top: 10px;
+ }
+ #fucking-location header a {
+  display: inline;
  }
  #fucking-start {
   padding-left: 10px;
@@ -334,12 +365,17 @@ body > footer a{
  }
  #fucking-map {
   margin: 10px auto;
+  height: 210px;
  }
- #fucking-friends ul li {
+ #fucking-rating {
+  margin: 0 auto;
   float: none;
-  padding: 0 0 10px;
  }
  #fucking-friends ul li:last-child {
   padding-bottom: 0;
+ }
+ #fucking-sidebar {
+  float: none;
+  text-align: center;
  }
 }
