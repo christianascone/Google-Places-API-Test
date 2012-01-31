@@ -171,11 +171,12 @@ input[type=submit]{
 input[type=submit]:hover{
   background:#00ccff;
 }
-
+#fucking-map-wrapper{
+  position:relative;
+}
 #fucking-location header{
   font-size:60px;
 }
-
 #fucking-map{
   margin: 40px auto;
   height: 300px;
@@ -183,11 +184,14 @@ input[type=submit]:hover{
 }
 #fucking-sidebar{
   width: 200px;
-  height:300px;
+  height:260px;
   background: url("sidebar.png");
   font-size:24px;
   text-align:right;
   padding:20px;
+  position:absolute;
+  top: 0px;
+  right:0px;
 }
 #fucking-rating{
   width: 80px;

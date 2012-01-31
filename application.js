@@ -41,9 +41,7 @@ jQuery(function($) {
     });
 
   directionsDisplay.bindTo('map', placeMarker);
-  
-  map.controls[google.maps.ControlPosition.RIGHT].push($('#fucking-sidebar')[0]);
-  
+    
   function fuckingFind(location){
     userLocation = location;
     map.setCenter(location);
