@@ -32,7 +32,7 @@ jQuery(function($) {
       suppressMarkers: true,
       polylineOptions: {
         clickable: false,
-        strokeColor: "00ccff"
+        strokeColor: "#00ccff"
       }
     });
     autocomplete = new google.maps.places.Autocomplete($input[0], { 
@@ -81,6 +81,7 @@ jQuery(function($) {
   
   var request;
   function findPlaces (location) {
+    $('#fucking-nothing').hide();
     if (request) { return };
     request = true;
     places = []; 
@@ -103,9 +104,9 @@ jQuery(function($) {
   }
   
   function renderFallback (message) {
-    alert("NO FUCKING PLACES FOUND, WHERE THE FUCK ARE YOU?!");
+    $('#fucking-nothing').show();
     placeMarker.setMap();
-    $fuckingWaiting.fadeToggle();
+    $fuckingWaiting.hide();
   }
   
   function showPlace (place) {
@@ -126,6 +127,7 @@ jQuery(function($) {
       placeMarker.setMap(map);
       map.fitBounds(bounds.extend(data.geometry.location));
 
+
       directionsService.route({
         origin: userMarker.position,
         destination: placeMarker.position,
@@ -133,13 +135,24 @@ jQuery(function($) {
         provideRouteAlternatives: false,
       }, function(result, status) {
         if (status == google.maps.DirectionsStatus.OK) {
-          var text = "<b>" + data.name + "</b>" + "<br>" 
+          var text = "<p><b>" + data.name + "</b>" + "<br>" 
             + data.vicinity + "<br>"
-            +"<small>" + result.routes[0].legs[0].distance.text + "</small>";
+            +"<small>" + result.routes[0].legs[0].distance.text + "</small></p>";
           $('#fucking-sidebar').html(text);
           directionsDisplay.setDirections(result);
+          if (data.rating) {
+            var $fuckingRating = $('<div id="fucking-rating">'),
+              $fuckingRate = $('<div id="fucking-rate">');
+            $fuckingRating.append($fuckingRate);
+            $fuckingRate.css({
+              "width":  data.rating / 5 * 100 + "%" 
+            });
+            $('#fucking-sidebar').append($fuckingRating);
+          };
         }
       });
+      
+      
       
     });
     
@@ -162,7 +175,7 @@ jQuery(function($) {
   function toggleFuckingView() {
     setTimeout(function(){
       $('#fucking-start').fadeToggle();
-      $fuckingWaiting.fadeToggle();
+      $fuckingWaiting.hide();
     }, 500);
   };
 
