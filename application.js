@@ -5,7 +5,7 @@ jQuery(function($) {
     userLocation,
     currentPlace = 0,  
     currentTypes = ['bar','pub'],
-    currentRadius = '1500',
+    currentRadius = 100,
     $input = $("input[type=search]"),
     $form = $("form"),
     $fuckingWaiting = $('#fucking-waiting');
@@ -86,21 +86,28 @@ jQuery(function($) {
     request = true;
     places = []; 
     $fuckingWaiting.fadeToggle();
-    placesService.search({
-      location: location,
-      radius: currentRadius,
-      types: currentTypes
-    }, function(results, status) {
-      if (status == google.maps.places.PlacesServiceStatus.OK) {
-        places = results.sort(function() {return 0.5 - Math.random()}) ;
-        currentPlace = 0;
-        toggleFuckingView();
-        showPlace(results[0]);
-      }else{
-        renderFallback();
-      }
-      request = null;
-    });
+    
+    (function search(radius){
+      placesService.search({
+        location: location,
+        radius: radius,
+        types: currentTypes
+      }, function(results, status) {
+        if (status == google.maps.places.PlacesServiceStatus.OK) {
+          places = results.sort(function() {return 0.5 - Math.random()}) ;
+          currentPlace = 0;
+          toggleFuckingView();
+          showPlace(results[0]);
+        }else{
+          if (radius < 64000 ) {
+            search(radius * 1.5)
+          }else{
+            renderFallback();
+          }
+        }
+        request = null;
+      });
+    })(currentRadius)
   }
   
   function renderFallback (message) {
@@ -122,6 +129,8 @@ jQuery(function($) {
       );
 
       var bounds = new google.maps.LatLngBounds(userMarker.position);
+      
+      
       placeMarker.setIcon("beer.png");
       placeMarker.setPosition(data.geometry.location);
       placeMarker.setMap(map);
